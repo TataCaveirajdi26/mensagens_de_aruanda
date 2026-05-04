@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens de Aruanda</title>
+    <style>
+        :root {
+            --roxo-mistico: #2e0854;
+            --vermelho-sangue: #8b0000;
+            --preto-profundo: #0a0a0a;
+            --ouro: #ffd700;
+            --texto-claro: #f0f0f0;
+        }
+
+        body {
+            font-family: 'Garamond', serif;
+            background: radial-gradient(circle, var(--roxo-mistico) 0%, var(--preto-profundo) 100%);
+            color: var(--texto-claro);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Estrela e brilhos de fundo (Simulação de misticismo) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            width: 100%;
+            border-bottom: 1px solid var(--vermelho-sangue);
+        }
+
+        h1 {
+            color: var(--ouro);
+            text-shadow: 2px 2px 10px var(--vermelho-sangue);
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 3px;
+        }
+
+        #data-hora {
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            color: var(--vermelho-sangue);
+            font-weight: bold;
+        }
+
+        .deck {
+            display: flex;
+            gap: 30px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .carta-container {
+            perspective: 1000px;
+        }
+
+        .carta {
+            width: 160px;
+            height: 250px;
+            background: linear-gradient(45deg, var(--preto-profundo), var(--vermelho-sangue));
+            border: 3px solid var(--ouro);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+            transition: all 0.5s ease;
+        }
+
+        .carta:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 0 30px var(--ouro);
+        }
+
+        .carta i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .carta span {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--ouro);
+        }
+
+        #box-mensagem {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--ouro);
+            border-radius: 15px;
+            display: none;
+            animation: fadeIn 1s ease;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-audio {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--vermelho-sangue);
+            color: white;
+            border: 1px solid var(--ouro);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MENSAGENS DE ARUANDA</h1>
+        <div id="data-hora"></div>
+    </header>
+
+    <main>
+        <div class="deck">
+            <div class="carta-container" onclick="revelar('paz')">
+                <div class="carta">
+                    <i>🕊️</i>
+                    <span>Caminhos de Paz</span>
+                </div>
+            </div>
+            <div class="carta-container" onclick="revelar('incentivo')">
+                <div class="carta">
+                    <i>⚔️</i>
+                    <span>Força e Luta</span>
+                </div>
+            </div>
+            <div class="carta-container" onclick="revelar('sabedoria')">
+                <div class="carta">
+                    <i>🌿</i>
+                    <span>Sabedoria Antiga</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="box-mensagem">
+            <h2 id="categoria-nome" style="color: var(--ouro);"></h2>
+            <p id="texto-msg" style="font-size: 1.3rem; line-height: 1.8;"></p>
+            <p style="color: var(--vermelho-sangue); font-style: italic; margin-top: 20px;">Que assim seja! Axé.</p>
+        </div>
+    </main>
+
+    <button class="btn-audio" onclick="toggleAudio()">🎵</button>
+    
+    <audio id="musica-fundo" loop>
+        <!-- Sugestão: Link para um som místico/atabaque suave -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Data e Hora Atualizada
+        function atualizarRelogio() {
+            const agora = new Date();
+            const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const dataStr = dias[agora.getDay()] + ", " + agora.toLocaleDateString('pt-BR');
+            const horaStr = agora.toLocaleTimeString('pt-BR');
+            document.getElementById('data-hora').innerHTML = dataStr + " | " + horaStr;
+        }
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio();
+
+        // Base de Dados Categorizada (Total 31 mensagens divididas)
+        const mensagens = {
+            paz: [
+                "Que a doçura de Oxum acalme seu coração nas águas da vida.",
+                "Iemanjá traz o equilíbrio necessário para navegar em dias calmos.",
+                "O manto branco de Oxalá cobre sua casa com proteção e silêncio.",
+                "A paz não é a ausência de barulho, mas a presença de fé dentro de você.",
+                "Deixe que as ondas do mar levem suas angústias e tragam esperança.",
+                "Nanã Buruquê abençoa sua jornada com a calma dos lagos antigos.",
+                "A mansidão é a maior força que um filho de fé pode carregar."
+                // Adicione mais aqui...
+            ],
+            incentivo: [
+                "Ogum abre seus caminhos! Não pare agora, a vitória está logo ali.",
+                "Iansã sopra ventos de mudança. Use essa força para se transformar.",
+                "Oxóssi aponta a flecha para o alvo. Tenha foco e sua fartura chegará.",
+                "As pedras de Xangô sustentam a justiça. O que é seu, o tempo trará.",
+                "Não tema as batalhas de hoje; você é protegido por falanges de luz.",
+                "Onde houver um obstáculo, haverá um caminho aberto por Exu.",
+                "Sua coragem é a ferramenta que os Orixás usam para te honrar."
+                // Adicione mais aqui...
+            ],
+            sabedoria: [
+                "Pai Joaquim diz: 'Fio, o tempo de Deus é diferente do tempo da gente'.",
+                "As ervas de Ossaim curam o corpo, mas a oração cura a alma.",
+                "A humildade é a chave que abre as portas de Aruanda.",
+                "Quem planta o bem na terra dos Pretos Velhos, colhe luz no amanhã.",
+                "Nem tudo que reluz é ouro, às vezes é o brilho de um guia te guardando.",
+                "O silêncio é a melhor resposta quando a maldade tenta te tocar.",
+                "Caminhe devagar, pois quem tem pressa não enxerga os sinais do caminho."
+                // Adicione mais aqui...
+            ]
+        };
+
+        function revelar(tipo) {
+            const lista = mensagens[tipo];
+            const aleatorio = Math.floor(Math.random() * lista.length);
+            const msgSelecionada = lista[aleatorio];
+
+            const nomes = { 'paz': 'Bênçãos de Paz', 'incentivo': 'Força da Jurema', 'sabedoria': 'Luz dos Anciãos' };
+
+            document.getElementById('categoria-nome').innerText = nomes[tipo];
+            document.getElementById('texto-msg').innerText = msgSelecionada;
+            document.getElementById('box-mensagem').style.display = 'block';
+            
+            // Rolar suavemente para a mensagem
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function toggleAudio() {
+            const audio = document.getElementById('musica-fundo');
+            return audio.paused ? audio.play() : audio.pause();
+        }
+    </script>
+</body>
+</html>
